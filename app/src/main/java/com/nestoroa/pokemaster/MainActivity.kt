@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.JsonObjectRequest
 import com.nestoroa.pokemaster.databinding.ActivityMainBinding
 
@@ -90,7 +89,8 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
 
-    private fun pokemons(): MutableList<Pokemon>{
+    private fun loadPokemons(): MutableList<Pokemon>{
+        // TODO Load persistent data
         val pokemon = Pokemon(
             id = 25,
             name = "Pikachu",
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
 
     private fun getPokemons() {
-        val pokemonData = pokemons()
+        val pokemonData = loadPokemons()
         listAdapter.submitList(pokemonData)
     }
 
