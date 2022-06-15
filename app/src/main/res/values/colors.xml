@@ -9,5 +9,6 @@
     <color name="primaryTextColor">#ffffff</color>
     <color name="secondaryTextColor">#ffffff</color>
     <color name="white">#ffffff</color>
+    <color name="grey">#fafafa</color>
     <color name="black">#000000</color>
 </resources>

@@ -1,39 +1,118 @@
 package com.nestoroa.pokemaster
 
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
 import com.nestoroa.pokemaster.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnClickListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var listAdapter: PokemonListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        var queue = NetworkSingleton.getInstance(this.applicationContext).requestQueue
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupRecyclerView()
+
+        getAllPokemon()
+
+        binding.btnCapturar.setOnClickListener {
+            var url = "https://pokeapi.co/api/v2/pokemon/${(1..666).random()}"
+            var jsonObjectRequest = JsonObjectRequest(
+                Request.Method.GET, url, null,
+                { response ->
+                    var pkName = response.getString("name")
+                    var pkTypes = response.getJSONArray("types")
+                    var pkType = pkTypes.getJSONObject(0).getJSONObject("type").getString("name")
+                    for (i in 1 until pkTypes.length()) {
+                        pkType = pkType + ", " + pkTypes.getJSONObject(i).getJSONObject("type").getString("name")
+                    }
+                    val pkNumber = response.getInt("id")
+                    val pkSpriteURL = response.getJSONObject("sprites").getString("front_default")
+                    Log.d("PokeLog","$pkName,$pkNumber,$pkType,$pkSpriteURL")
+                    addPokemon(Pokemon(
+                        name = pkName,
+                        id = pkNumber,
+                        types = pkType,
+                        spriteURL = pkSpriteURL
+                    ))
+                },
+                { error ->
+                    var pokemon = Pokemon(
+                        name = "MissingNo",
+                        spriteURL = "http://images.wikia.com/unanything/images/c/c1/MISSINGNO.png",
+                        id = 999,
+                        types = error.toString()
+                    )
+                    addPokemon(pokemon)
+
+                }
+            )
+            NetworkSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
+
+        }
+        binding.btnFree.setOnClickListener {
+            // TODO : DELETE ALL POKEMON
+        }
         setSupportActionBar(binding.toolbar)
 
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        appBarConfiguration = AppBarConfiguration(navController.graph)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-
-        binding.fab.setOnClickListener { view ->
+        /*binding.fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
         }
+*/
+
     }
 
+    override fun onClick(pokemon: Pokemon) {
+        TODO("Not yet implemented")
+    }
+
+
+    private fun setupRecyclerView(){
+        listAdapter = PokemonListAdapter(this)
+        binding.rvCapturedPokemon.apply{
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = listAdapter
+        }
+    }
+
+
+    private fun pokemons(): MutableList<Pokemon>{
+        val pokemon = Pokemon(
+            id = 25,
+            name = "Pikachu",
+            types = "Electric",
+            spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png")
+        return  mutableListOf(pokemon)
+    }
+
+
+    private fun getAllPokemon() {
+        val pokemonData = pokemons()
+        listAdapter.submitList(pokemonData)
+    }
+
+    private fun addPokemon(pokemon : Pokemon) {
+        val pokemonData = pokemons()
+        pokemonData.add(pokemon)
+        listAdapter.submitList(pokemonData)
+    }
+
+
+/*
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
@@ -49,10 +128,5 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration)
-                || super.onSupportNavigateUp()
-    }
+*/
 }
