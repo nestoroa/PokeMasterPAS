@@ -19,13 +19,13 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        var queue = NetworkSingleton.getInstance(this.applicationContext).requestQueue
+        NetworkSingleton.getInstance(this.applicationContext).requestQueue
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setupRecyclerView()
 
-        getAllPokemon()
+        getPokemons()
 
         binding.btnCapturar.setOnClickListener {
             var url = "https://pokeapi.co/api/v2/pokemon/${(1..666).random()}"
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
 
         }
         binding.btnFree.setOnClickListener {
-            // TODO : DELETE ALL POKEMON
+            removePokemon()
         }
         setSupportActionBar(binding.toolbar)
 
@@ -100,14 +100,20 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
 
-    private fun getAllPokemon() {
+    private fun getPokemons() {
         val pokemonData = pokemons()
         listAdapter.submitList(pokemonData)
     }
 
     private fun addPokemon(pokemon : Pokemon) {
-        val pokemonData = pokemons()
+        val pokemonData = listAdapter.currentList.toMutableList()
         pokemonData.add(pokemon)
+        listAdapter.submitList(pokemonData)
+    }
+
+    private fun removePokemon() {
+        val pokemonData = listAdapter.currentList.toMutableList()
+        pokemonData.clear()
         listAdapter.submitList(pokemonData)
     }
 
