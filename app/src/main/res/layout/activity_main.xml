@@ -55,18 +55,51 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:text="Liberar todos"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/cardTrainerID"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardTrainerID"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/secondaryDarkColor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="5dp"
+        >
 
-    <!---com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" /-->
+        <ImageView
+            android:id="@+id/imgTrainerPicture"
+            android:layout_width="70dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <TextView
+            android:id="@+id/tvTrainerName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            tools:text="Trainer_Name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            android:textColor="@color/primaryTextColor"
+            app:layout_constraintStart_toEndOf="@+id/imgTrainerPicture"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvTrainerPokemonCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            tools:text="TextView"
+            android:textColor="@color/primaryTextColor"
+            app:layout_constraintStart_toEndOf="@+id/imgTrainerPicture"
+            app:layout_constraintTop_toBottomOf="@+id/tvTrainerName" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

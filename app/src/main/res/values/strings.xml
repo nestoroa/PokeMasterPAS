@@ -19,4 +19,6 @@
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
     <string name="strSpriteDescription">Pokemon sprite</string>
+    <string name="professor_introduction">¡Saludos! Mi nombre es el Dr. Miñano y soy un profesor Pokémon. Antes de darte tu primer Pokémon, quiero que te presentes como es debido.</string>
+    <string name="start_adventure_string">Comenzar aventura</string>
 </resources>
