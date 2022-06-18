@@ -41,7 +41,7 @@
         android:id="@+id/btnCapturar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Capturar"
+        android:text="@string/capturar"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toTopOf="@+id/btnFree"
@@ -54,7 +54,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
-        android:text="Liberar todos"
+        android:text="@string/liberar_todos"
         app:layout_constraintBottom_toTopOf="@+id/cardTrainerID"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

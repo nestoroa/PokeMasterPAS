@@ -2,9 +2,14 @@ package com.nestoroa.pokemaster
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.volley.Request
+import com.android.volley.toolbox.JsonObjectRequest
 import com.bumptech.glide.Glide
 import com.nestoroa.pokemaster.PokemonTrainerApplication.Companion.prefs
 import com.nestoroa.pokemaster.activities.TrainerRegistration
@@ -12,53 +17,46 @@ import com.nestoroa.pokemaster.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity(), OnClickListener {
 
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var listAdapter: PokemonListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+
+        NetworkSingleton.getInstance(this.applicationContext).requestQueue
+
+        setSupportActionBar(binding.toolbar)
+
+        setupRecyclerView()
 
         checkTrainerValues()
 
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        setupRecyclerView()
-
-        getAllPokemon()
-
         binding.btnCapturar.setOnClickListener {
-            addPokemon(randPokemon())
+            capturePokemon()
         }
-        binding.btnFree.setOnClickListener {
-            removePokemon()
-        }
-        setSupportActionBar(binding.toolbar)
+        binding.btnFree.setOnClickListener { removePokemon() }
 
-        /*binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
-        }
-*/
-
+        setContentView(binding.root)
     }
 
     private fun checkTrainerValues() {
-        if (prefs.SHARED_NAME.isNotEmpty() &&
-            prefs.SHARED_POKEMONS.isNotEmpty() &&
-            prefs.SHARED_USER_PIC.isNotEmpty()
-        ) {
-            binding.tvTrainerName.text = prefs.SHARED_NAME
-            binding.tvTrainerPokemonCount.text =
-                "Pokémon capturados: ${prefs.SHARED_POKEMONS.length}"
-            Glide.with(this)
-                .load(prefs.SHARED_USER_PIC)
-                .into(binding.imgTrainerPicture)
+        if (prefs.getName() != "" && prefs.getPicURL() != "") {
+            loadTrainerData()
         } else {
             startActivity(Intent(this, TrainerRegistration::class.java))
         }
     }
 
+    private fun loadTrainerData() {
+        Glide.with(this)
+            .load(prefs.getPicURL())
+            .into(binding.imgTrainerPicture)
+        binding.tvTrainerName.text = prefs.getName()
+        listAdapter.submitList(prefs.getPokemons() as MutableList<Pokemon>)
+        binding.tvTrainerPokemonCount.text =
+            "Pokémon capturados: ${prefs.getPokemons().count()}"
+    }
 
     private fun setupRecyclerView() {
         listAdapter = PokemonListAdapter(this)
@@ -69,29 +67,104 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         }
     }
 
-    private fun starterPokemon() {
-        val pokemon = Pokemon(
-            id = 25,
-            name = "Pikachu",
-            types = "Electric",
-            spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png"
-        )
-        listAdapter.submitList(mutableListOf(pokemon))
-    }
-
     private fun addPokemon(pokemon: Pokemon) {
         val pokemonData = listAdapter.currentList.toMutableList()
         pokemonData.add(pokemon)
         listAdapter.submitList(pokemonData)
+        binding.tvTrainerPokemonCount.text =
+            "Pokémon capturados: ${pokemonData.count()}"
     }
 
     private fun removePokemon() {
         val pokemonData = listAdapter.currentList.toMutableList()
         pokemonData.clear()
         listAdapter.submitList(pokemonData)
+        binding.tvTrainerPokemonCount.text =
+            "Pokémon capturados: ${pokemonData.count()}"
+    }
+
+
+    private fun capturePokemon() {
+        val url = "https://pokeapi.co/api/v2/pokemon/${(1..666).random()}"
+        val jsonObjectRequest = JsonObjectRequest(
+            Request.Method.GET, url, null,
+            { response ->
+                val pkName = response.getString("name")
+                val pkTypes = response.getJSONArray("types")
+                var pkType = pkTypes.getJSONObject(0).getJSONObject("type").getString("name")
+                for (i in 1 until pkTypes.length()) {
+                    pkType =
+                        pkType + ", " + pkTypes.getJSONObject(i).getJSONObject("type")
+                            .getString("name")
+                }
+                val pkNumber = response.getInt("id")
+                val pkSpriteURL = response.getJSONObject("sprites").getString("front_default")
+                Log.d("PokeLog", "$pkName,$pkNumber,$pkType,$pkSpriteURL")
+                addPokemon(
+                    Pokemon(
+                        name = pkName,
+                        id = pkNumber,
+                        types = pkType,
+                        spriteURL = pkSpriteURL
+                    )
+                )
+            },
+            { error ->
+                addPokemon(
+                    Pokemon(
+                        name = "MissingNo",
+                        spriteURL = "http://images.wikia.com/unanything/images/c/c1/MISSINGNO.png",
+                        id = 999,
+                        types = error.toString()
+                    )
+                )
+            }
+        )
+        NetworkSingleton.getInstance(this).addToRequestQueue(jsonObjectRequest)
     }
 
     override fun onClick(pokemon: Pokemon) {
         // Nada
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.logout_menu_item -> {
+                prefs.wipe()
+                checkTrainerValues()
+            }
+        }
+        return when (item.itemId) {
+            R.id.logout_menu_item -> true
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        loadTrainerData()
+    }
+
+    override fun onActivityReenter(resultCode: Int, data: Intent?) {
+        super.onActivityReenter(resultCode, data)
+        loadTrainerData()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        prefs.savePokemons(listAdapter.currentList.toMutableList())
+    }
+
+    override fun onStop() {
+        super.onStop()
+        prefs.savePokemons(listAdapter.currentList.toMutableList())
+    }
+
+
 }

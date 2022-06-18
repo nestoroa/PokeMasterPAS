@@ -1,11 +1,14 @@
 package com.nestoroa.pokemaster.activities
 
 import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
+import androidx.annotation.RequiresApi
 import com.bumptech.glide.Glide
+import com.nestoroa.pokemaster.Pokemon
+import com.nestoroa.pokemaster.PokemonTrainerApplication.Companion.prefs
 import com.nestoroa.pokemaster.R
 import com.nestoroa.pokemaster.databinding.ActivityTrainerRegistrationBinding
 
@@ -22,30 +25,15 @@ class TrainerRegistration : Activity() {
         "https://static.wikia.nocookie.net/pokemon-uranium/images/2/27/TrainerNatalie.png"
 
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTrainerRegistrationBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
         setPictures()
-
-        val btnNB = findViewById<ImageButton>(R.id.btnTrainerNB)
-        btnNB.setOnClickListener {
-            pictureURL = trainerNBURL
-        }
-
-        val btnMale = findViewById<ImageButton>(R.id.btnTrainerMale)
-        btnMale.setOnClickListener {
-            pictureURL = trainerMaleURL
-        }
-
-        val btnFemale = findViewById<ImageButton>(R.id.btnTrainerFemale)
-        btnFemale.setOnClickListener {
-            pictureURL = trainerFemaleURL
-        }
+        setButtons()
 
         val etTrainerName = findViewById<EditText>(R.id.etTrainerName)
-
         val btnRegister = findViewById<Button>(R.id.btnRegisterTrainer)
 
         btnRegister.setOnClickListener {
@@ -54,13 +42,15 @@ class TrainerRegistration : Activity() {
             } else if (pictureURL.toString().isEmpty()) {
                 // Toast solicitando avatar
             } else {
-                // Guardar datos en Shared Preferences
+                prefs.saveName(etTrainerName.text.toString())
+                prefs.savePicURL(pictureURL)
+                prefs.savePokemons(mutableListOf(Pokemon()))
+                finish()
             }
         }
-
     }
 
-    private fun setPictures(){
+    private fun setPictures() {
         Glide.with(this)
             .load(professorURL)
             .into(binding.imgProfessorPicture)
@@ -73,5 +63,33 @@ class TrainerRegistration : Activity() {
         Glide.with(this)
             .load(trainerFemaleURL)
             .into(binding.btnTrainerFemale)
+    }
+
+    private fun setButtons() {
+        binding.btnTrainerNB.setBackgroundResource(R.drawable.white_button)
+        binding.btnTrainerMale.setBackgroundResource(R.drawable.white_button)
+        binding.btnTrainerFemale.setBackgroundResource(R.drawable.white_button)
+
+        binding.btnTrainerNB.setOnClickListener {
+            pictureURL = trainerNBURL
+            binding.btnTrainerNB.setBackgroundResource(R.drawable.red_button)
+            binding.btnTrainerMale.setBackgroundResource(R.drawable.white_button)
+            binding.btnTrainerFemale.setBackgroundResource(R.drawable.white_button)
+        }
+
+        binding.btnTrainerMale.setOnClickListener {
+            pictureURL = trainerMaleURL
+            binding.btnTrainerMale.setBackgroundResource(R.drawable.red_button)
+            binding.btnTrainerNB.setBackgroundResource(R.drawable.white_button)
+            binding.btnTrainerFemale.setBackgroundResource(R.drawable.white_button)
+        }
+
+        binding.btnTrainerFemale.setOnClickListener {
+            pictureURL = trainerFemaleURL
+            binding.btnTrainerFemale.setBackgroundResource(R.drawable.red_button)
+            binding.btnTrainerMale.setBackgroundResource(R.drawable.white_button)
+            binding.btnTrainerNB.setBackgroundResource(R.drawable.white_button)
+
+        }
     }
 }

@@ -26,7 +26,7 @@ class PokemonListAdapter(private val listener: OnClickListener) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val pokemon = getItem(position)
 
-        with(holder as ViewHolder){
+        with(holder){
             binding.tvPokemonId.text = "#${pokemon.id.toString()}"
             holder.binding.tvPokemonName.text = pokemon.name
             holder.binding.tvPokemonType.text = pokemon.types

@@ -52,9 +52,7 @@
         app:layout_constraintEnd_toStartOf="@+id/btnTrainerNB"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnTrainerNB"
-        tools:src="@tools:sample/avatars"
-        app:tintMode="add"
-        app:tint="@color/secondaryDarkColor"
+        tools:src="@mipmap/ic_launcher_foreground"
         />
 
     <ImageButton
@@ -66,9 +64,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/etTrainerName"
-        tools:src="@tools:sample/avatars"
-        app:tintMode="add"
-        app:tint="@color/secondaryDarkColor" />
+        android:background="@drawable/white_button"
+        tools:src="@mipmap/ic_launcher_foreground" />
 
     <ImageButton
         android:id="@+id/btnTrainerFemale"
@@ -78,10 +75,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnTrainerNB"
         app:layout_constraintTop_toTopOf="@+id/btnTrainerNB"
-        tools:src="@tools:sample/avatars"
-        app:tintMode="add"
-        app:tint="@color/secondaryDarkColor"
-        />
+        tools:src="@mipmap/ic_launcher_foreground" />
 
     <Button
         android:id="@+id/btnRegisterTrainer"
@@ -89,9 +83,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:paddingHorizontal="20dp"
+        android:background="@drawable/red_button"
+        android:textColor="@color/primaryTextColor"
         android:text="@string/start_adventure_string"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.464"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnTrainerNB" />
 </androidx.constraintlayout.widget.ConstraintLayout>

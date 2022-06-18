@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="2dp"
-    android:background="@color/grey"
+    android:padding="6dp"
+    android:background="@drawable/white_button"
     android:layout_margin="2dp"
     tools:context=".MainActivity">
 
@@ -37,7 +37,7 @@
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/imgPokemonSprite"
-        android:layout_margin="10dp"
+        android:layout_marginHorizontal="10dp"
         tools:text="Pikachu" />
 
     <TextView
